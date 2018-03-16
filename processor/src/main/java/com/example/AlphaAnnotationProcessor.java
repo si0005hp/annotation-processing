@@ -1,5 +1,10 @@
 package com.example;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -26,7 +31,21 @@ public class AlphaAnnotationProcessor extends AbstractProcessor {
                 System.out.println(String.format("@Alpha at %s, value: %s", element, alpha.value()));
             }
         });
+
+        System.out.println(loadProperties("test.properties"));
         return true;
+    }
+    
+    private Properties loadProperties(String fileName) {
+        Properties prop = new Properties();
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(fileName)) {
+            if (in != null) {
+                prop.load(in);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return prop;
     }
 
 }
