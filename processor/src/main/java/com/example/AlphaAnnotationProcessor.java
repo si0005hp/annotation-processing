@@ -1,9 +1,9 @@
 package com.example;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
 
@@ -32,20 +32,27 @@ public class AlphaAnnotationProcessor extends AbstractProcessor {
             }
         });
 
-        System.out.println(loadProperties("test.properties"));
-        return true;
-    }
-    
-    private Properties loadProperties(String fileName) {
-        Properties prop = new Properties();
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(fileName)) {
-            if (in != null) {
-                prop.load(in);
-            }
+        try {
+            loadProperties("test.properties");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return prop;
+        return true;
+    }
+    
+    private void loadProperties(String fileName) throws IOException {
+        Enumeration<URL> e = getClass().getClassLoader().getResources(fileName);
+        while (e.hasMoreElements()) {
+            URL url = e.nextElement();
+            
+            Properties prop = new Properties();
+            try (InputStream in = url.openStream()) {
+                if (in != null) {
+                    prop.load(in);
+                }
+            }
+            System.out.println("prop: " + prop);
+        }
     }
 
 }
